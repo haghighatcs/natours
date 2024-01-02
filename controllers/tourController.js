@@ -1,17 +1,30 @@
 const fs = require('fs');
+const { validateHeaderName } = require('http');
 
-const data = fs.readFileSync('./dev-data/data.json');
+const data = JSON.parse(fs.readFileSync('./dev-data/data.json'));
+
+exports.checkId = (req, res, next, val) => {
+  console.log(`data length is  ${data.length}`);
+  if (!data.find((el) => el.id === val * 1)) {
+    return res.status(400).json({
+      status: 'fail',
+      message: 'The id is not valid!',
+    });
+  }
+  next();
+};
 
 exports.getAllTours = (req, res) => {
-  res.status(200).json(JSON.parse(data));
+  res.status(200).json(data);
 };
 
 exports.getTour = (req, res) => {
-  res.status(200).json(JSON.parse(data));
+  const singleRow = data.find((el) => el.id === req.params.id * 1);
+  res.status(200).json(singleRow);
 };
 
 exports.createTour = (req, res) => {
-  res.status(200).json(JSON.parse(data));
+  res.status(201).json(JSON.parse(data));
 };
 
 exports.updateTour = (req, res) => {
@@ -19,5 +32,5 @@ exports.updateTour = (req, res) => {
 };
 
 exports.deleteTour = (req, res) => {
-  res.status(200).json(JSON.parse(data));
+  res.status(204).json(JSON.parse(data));
 };
